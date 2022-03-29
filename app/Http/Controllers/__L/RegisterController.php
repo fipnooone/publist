@@ -21,7 +21,7 @@ class RegisterController extends Controller
         $user = Author::create($validateFields);
         if($user) {
             Auth::login($user);
-            return redirect(route('private'));
+            return redirect(route('home'));
         }
 
         return redirect(route('login'))->withErrors([

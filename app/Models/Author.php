@@ -6,8 +6,10 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Str;
 
 class Author extends Authenticatable
 {
@@ -32,6 +34,7 @@ class Author extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'api_token'
     ];
 
     /**
@@ -45,5 +48,18 @@ class Author extends Authenticatable
 
     public function setPasswordAttribute($password) {
         $this->attributes['password'] = Hash::make($password);
+        //$this->attributes['api_token'] = Str::random(60);
+    }
+
+    public function isAdmin() {
+        if($this->attributes['admin']) return true;
+    }
+
+    public static function getAll() {
+        return DB::table('authors')
+            ->select('authors.id', 'authors.name', 'authors.email', 'authors.admin', DB::raw('count(books.id) as books_num'))
+            ->leftJoin('books', 'books.author_id', '=', 'authors.id')
+            ->groupBy('authors.id')
+            ->get();
     }
 }
