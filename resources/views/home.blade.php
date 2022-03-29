@@ -72,7 +72,7 @@
                             ]
                         ]) }})'>
                         <span class="title">Title: {{ $book->title }}</span>
-                        <span class="author-name">Author: {{ $book->name }}</span>
+                        <span class="author-name">Author: {{ $book->author_name }}</span>
                         <span class="description">Description: {{ $book->description }}</span>
                     </div>
                 @endforeach

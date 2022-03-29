@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Author;
 use App\Models\Book;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -18,7 +17,6 @@ class BooksController extends Controller
     public function index()
     {
         return Book::getAll();
-        //return Book::all()->join()
     }
 
     /**
@@ -28,10 +26,10 @@ class BooksController extends Controller
      */
     public function searchByAuthorName($name)
     {   
-        $author = Author::where('name', $name)->get();
+        $author = DB::table('authors')->select('id')->where('name', $name)->get();
         if (!count($author) || !$author)
-            return [ 'error' => 'Books not found' ];
-        return Book::where('id', $author[0]['id'])->get();
+            return [ ];
+        return Book::where('id', $author[0]->id)->get();
     }
     /**
      * Store a newly created resource in storage.
@@ -58,7 +56,6 @@ class BooksController extends Controller
             return [ 'book_id' => $book['id'] ];
         }
         
-        //return redirect()->withErrors(['newBookError' => 'Book creation error']);
         return [ 'error' => 'Book creation error' ];
     }
 
@@ -74,36 +71,59 @@ class BooksController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Update Book (patch)
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Request $request)
     {
-        //
+        $fields = $request->validate([
+            'id' => 'required|integer',
+            'title' => 'string',
+            'description' => 'integer',
+            'author_id' => 'integer'
+        ]);
+
+        $book = Book::whereId($fields['id'])->get()[0];
+
+        if(Auth::user()->id != $book->author_id)
+            return ['error'=>'No access'];
+
+        $newData = [];
+
+        foreach (['title', 'description', 'author_id'] as $key) {
+            if (array_key_exists($key, $fields) && $fields[$key])
+                $newData[$key] = $fields[$key];
+        }
+
+        if (!count($newData))
+            return ['error'=>'No data provided'];
+
+        $book->update($newData);
+
+        return ['success'=>true];
     }
 
     /**
-     * Update the specified resource in storage.
+     * Delete book (delete)
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function destroy(Request $request)
     {
-        //
-    }
+        $fields = $request->validate([
+            'id' => 'required|integer'
+        ]);
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+        $book = Book::whereId($fields['id'])->get()[0];
+
+        if(Auth::user()->id != $book->author_id)
+            return ['error'=>'No access'];
+
+        $book->delete();
+
+        return ['success'=>true];
     }
 }

@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Author;
 use App\Models\Book;
-use Barryvdh\Debugbar\Facades\Debugbar;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -16,7 +15,6 @@ class ModalController extends Controller
             return Book::class;
         else
             return Author::class;
-            
     }
 
     public function hat(Request $request) {
@@ -24,12 +22,6 @@ class ModalController extends Controller
             return redirect()->back();
         
         $id = $request->input('id');
-        // $name = $request->input('name');
-        // $author_id = $request->input('author_id');
-        // $description = $request->input('description');
-        // $title = $request->input('title');
-        // $email = $request->input('email');
-        // $password = $request->input('password');
         $type = $request->input('type');
 
         if($type == 0) {
@@ -47,13 +39,9 @@ class ModalController extends Controller
 
             if (array_key_exists('password', $fields) && $fields['password']) $fields['password'] = Hash::make($fields['password']);
         }
-        
-         Debugbar::info('working');
 
         if ($request->submit == 'save') {
-            Debugbar::info('save');
             if ($id) {
-                Debugbar::info('update');
                 $newData = [];
                 if ($type == 0) 
                     $checkFields = ['title', 'description', 'author_id'];
@@ -65,7 +53,6 @@ class ModalController extends Controller
                 }
                 $this->getModel($type)::whereId($id)->update($newData);
             } else {
-                Debugbar::info('create');
                 $this->getModel($type)::create(($type == 0) ? 
                     [
                         'title' => $fields['title'],
@@ -76,11 +63,6 @@ class ModalController extends Controller
                         'email' => $fields['email'],
                         'password' => $fields['password']
                     ]);
-                // Book::create([
-                //     'title' => $fields['title'],
-                //     'description' => $fields['description'],
-                //     'author_id' => 2
-                // ]);
             }
         } elseif ($request->submit == 'delete') {
             $this->getModel($type)::destroy($id);

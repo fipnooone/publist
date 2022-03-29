@@ -25,7 +25,7 @@ class Book extends Model
     public static function getAll() {
         return DB::table('books')
             ->join('authors', 'authors.id', '=', 'books.author_id')
-            ->select('books.*', 'authors.name')
+            ->select('books.*', DB::raw('authors.name as author_name'))
             ->get();
     }
 }

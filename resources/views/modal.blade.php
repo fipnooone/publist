@@ -33,14 +33,10 @@
                 newSelect.name = name;
 
                 @foreach ($authors as $author)
-                    //var newOption = document.createElement('option');
                     var newOption = new Option("{{ $author->name }}", "{{ $author->id }}");
-                    //newOption.value = {{ $author->id }};
-                    //newOption.text = {{ $author->name }};
                     newSelect.appendChild(newOption);
                 @endforeach
-
-                //newInput.value = value;
+                
                 createParentDiv().appendChild(newSelect);
                 return;
             case 'password':
