@@ -67,7 +67,12 @@ class BooksController extends Controller
      */
     public function show($id)
     {
-        return Book::where('id', '=', $id)->get();
+        $book = Book::where('id', '=', $id)->get();
+        
+        if(!count($book))
+            return ['error'=>'Book not found'];
+        
+        return $book[0];
     }
 
     /**

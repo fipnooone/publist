@@ -9,10 +9,8 @@ Route::post('login', [OAuthController::class, 'login']);
 Route::post('registration', [OAuthController::class, 'registration']);
 
 Route::prefix('books')->group(function () {
-    Route::get('', [BooksController::class, 'index']); // 
-    
-    Route::get('{id}', [BooksController::class, 'show']); // 
-    //Route::post('', [BooksController::class, 'save']);
+    Route::get('', [BooksController::class, 'index']);
+    Route::get('{id}', [BooksController::class, 'show']);
     Route::patch('', [BooksController::class, 'edit'])->middleware('auth:sanctum');
     Route::delete('', [BooksController::class, 'destroy'])->middleware('auth:sanctum');
 });
