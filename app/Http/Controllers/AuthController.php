@@ -43,4 +43,25 @@ class AuthController extends Controller
             'formError' => 'Server error'
         ]);
     }
+
+    public function showLogin() {
+        if(Auth::check()) {
+            return redirect(route('home'));
+        }
+
+        return view('login');
+    }
+
+    public function showRegister() {
+        if(Auth::check()) {
+            return redirect(route('home'));
+        }
+
+        return view('registration');
+    }
+
+    public function logOut() {
+        Auth::logout();
+        return redirect(route('login'));
+    }
 }

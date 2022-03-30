@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Author;
 use App\Models\Book;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -12,36 +13,32 @@ class BooksController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
      */
     public function index()
     {
         return Book::getAll();
     }
-
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
      */
     public function searchByAuthorName($name)
     {   
-        $author = DB::table('authors')->select('id')->where('name', $name)->get();
-        if (!count($author) || !$author)
-            return [ ];
-        return Book::where('id', $author[0]->id)->get();
+        $author = Author::select('id')->where('name', '=', $name)->first();
+
+        if(!$author)
+            return [
+                'error' => 'Author not found'
+            ];
+
+        return Book::where('author_id', $author->id)->get(); 
     }
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
      */
-    public function save(Request $request)
-    {
-        if(!Auth::check())
-            return [ 'error' => 'Not Authorized' ];
-        
+    public function create(Request $request)
+    {   
         $data = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string|max:1024'
@@ -53,10 +50,10 @@ class BooksController extends Controller
             'author_id' => Auth::user()->id
         ]);
         if($book) {
-            return [ 'book_id' => $book['id'] ];
+            return redirect()->back();
         }
         
-        return [ 'error' => 'Book creation error' ];
+        return redirect()->back()->withErrors(['error' => 'Book creation error']);
     }
 
     /**
@@ -67,54 +64,53 @@ class BooksController extends Controller
      */
     public function show($id)
     {
-        $book = Book::where('id', '=', $id)->get();
+        $book = Book::whereId($id)->first();
         
-        if(!count($book))
+        if(!$book)
             return ['error'=>'Book not found'];
         
-        return $book[0];
+        return $book;
     }
 
     /**
      * Update Book (patch)
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
      */
-    public function edit(Request $request)
-    {
+
+    public function edit(Request $request) {
         $fields = $request->validate([
             'id' => 'required|integer',
             'title' => 'string',
-            'description' => 'integer',
+            'description' => 'string',
             'author_id' => 'integer'
         ]);
 
-        $book = Book::whereId($fields['id'])->get()[0];
+        $book = Book::find($fields['id']);
 
-        if(Auth::user()->id != $book->author_id)
+        if(Auth::user()->id != $book->author_id && !Auth::user()->admin)
             return ['error'=>'No access'];
 
-        $newData = [];
-
-        foreach (['title', 'description', 'author_id'] as $key) {
-            if (array_key_exists($key, $fields) && $fields[$key])
-                $newData[$key] = $fields[$key];
-        }
-
-        if (!count($newData))
-            return ['error'=>'No data provided'];
-
-        $book->update($newData);
+        $book->update($fields);
 
         return ['success'=>true];
+    }
+
+    private function withView($res)
+    {
+        if($res && array_key_exists('success', $res))
+            return redirect()->back();
+        
+        return redirect()->back()->withErrors($res);
+    }
+
+    public function editView(Request $request)
+    {      
+        return $this->withView($this->edit($request));
     }
 
     /**
      * Delete book (delete)
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
      */
     public function destroy(Request $request)
     {
@@ -122,7 +118,7 @@ class BooksController extends Controller
             'id' => 'required|integer'
         ]);
 
-        $book = Book::whereId($fields['id'])->get()[0];
+        $book = Book::whereId($fields['id'])->first();
 
         if(Auth::user()->id != $book->author_id)
             return ['error'=>'No access'];
@@ -130,5 +126,10 @@ class BooksController extends Controller
         $book->delete();
 
         return ['success'=>true];
+    }
+
+    public function destroyView(Request $request)
+    {
+        return $this->withView($this->destroy($request));
     }
 }

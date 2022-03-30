@@ -18,10 +18,6 @@ class Book extends Model
         'author_id'
     ];
 
-    public function getListByUserId($id) {
-        $this->belongsToMany(Author::class);
-    }
-
     public static function getAll() {
         return DB::table('books')
             ->join('authors', 'authors.id', '=', 'books.author_id')

@@ -14,9 +14,12 @@ class OAuthController extends Controller
         if(Auth::check())
             Auth::logout();
 
-        $formFields = $request->only(['email', 'password']);
+        $fields = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|max:255'
+        ]);
 
-        if(Auth::attempt($formFields)) {
+        if(Auth::attempt($fields)) {
             $token = $request->user()->createToken(Str::random(10));
             return ['token' => $token->plainTextToken];
         }

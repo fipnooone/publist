@@ -1,8 +1,8 @@
 <?php
 
+use App\Http\Controllers\AuthorsController;
 use App\Http\Controllers\BooksController;
 use App\Http\Controllers\OAuthController;
-use App\Models\Author;
 use Illuminate\Support\Facades\Route;
 
 Route::post('login', [OAuthController::class, 'login']);
@@ -16,9 +16,9 @@ Route::prefix('books')->group(function () {
 });
 
 Route::prefix('authors')->group(function() {
-    Route::get('', [Author::class, 'getAll']);
-    Route::get('{id}', [Author::class, 'getByIdWithBooks']);
+    Route::get('', [AuthorsController::class, 'index']);
+    Route::get('{id}', [AuthorsController::class, 'getByIdWithBooks']);
     Route::get('books/{name}', [BooksController::class, 'searchByAuthorName']);
-    Route::patch('', [Author::class, 'edit'])->middleware('auth:sanctum');;
+    Route::patch('', [AuthorsController::class, 'edit'])->middleware('auth:sanctum');;
 });
 
