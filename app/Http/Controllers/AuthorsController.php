@@ -49,18 +49,12 @@ class AuthorsController extends Controller
     }
 
     public static function getByIdWithBooks($id) {
-        $author = Author::select('name', 'email')->whereId($id)->first();
+        $author = Author::find($id);
 
-        if(!$author)
-            return [
-                'error' => 'Author not found'
-            ];
+        if (!$author)
+            return ['error' => 'Author not found'];
 
-        return [
-            'name' => $author->name,
-            'email' => $author->email,
-            'books' => Book::where('author_id', '=', $id)->get()
-        ];
+        return $author->with('Books:id,title,description,author_id')->get();
     }
 
     public function create(Request $request)

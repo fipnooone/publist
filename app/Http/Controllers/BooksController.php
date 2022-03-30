@@ -63,7 +63,7 @@ class BooksController extends Controller
      */
     public function show($id)
     {
-        $book = Book::whereId($id)->first();
+        $book = Book::find($id);
         
         if(!$book)
             return ['error'=>'Book not found'];
