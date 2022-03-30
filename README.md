@@ -3,8 +3,9 @@
 
 ## Api
 
-В запросах с обязательной авторизацией нужно указать токен, ранее полученный в /login, в заголовке Authorization как Bearer токен.
-Дополнительно нужно добавить заголовок Accept: application/json
+В запросах с обязательной авторизацией нужно указать токен, ранее полученный в /login, в заголовке Authorization как Bearer токен. <br/>
+Дополнительно нужно добавить заголовок Accept: application/json <br/>
+Как я понял, в php есть ограничения, не позволяющие адекватно работать с PATCH, DELETE и PUT методами, из-за чего нужно сделать POST запрос с указанием ```_method: PATCH / DELETE (в form-data)``` <br/>
 
 a. Запрос на авторизацию пользователя (аутентификация с помощью токенов).
 ```
@@ -27,7 +28,10 @@ Returns: Array
     "author_id": int,
     "title": string,
     "description": string,
-    "author_name": string
+    "author": {
+            "id": int,
+            "name": string
+    }
  }]
 ```
 c. Получение данных книги по id, авторизация не обязательна.
@@ -64,7 +68,7 @@ Returns: Array
     "name": string,
     "email": string,
     "admin": int,
-    "books_num": int
+    "books_count": int
 }]
 ```
 g. Получение данных автора со списком книг, авторизация не обязательна.
