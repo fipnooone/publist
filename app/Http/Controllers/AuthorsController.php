@@ -4,16 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Author;
 use App\Models\Book;
-use Barryvdh\Debugbar\Facades\Debugbar;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class AuthorsController extends Controller
 {
     public function index() {
-        return Author::getAll();
+        return Author::withCount('Books')->get();
     }
 
     public function edit(Request $request) {

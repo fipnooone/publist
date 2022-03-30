@@ -10,6 +10,8 @@ class Book extends Model
 {
     use HasFactory;
 
+    public $table = 'books';
+
     public $timestamps = false;
 
     protected $fillable = [
@@ -18,10 +20,7 @@ class Book extends Model
         'author_id'
     ];
 
-    public static function getAll() {
-        return DB::table('books')
-            ->join('authors', 'authors.id', '=', 'books.author_id')
-            ->select('books.*', DB::raw('authors.name as author_name'))
-            ->get();
+    public function author() {
+        return $this->belongsTo(Author::class, 'author_id');
     }
 }

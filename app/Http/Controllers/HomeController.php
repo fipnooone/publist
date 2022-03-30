@@ -14,8 +14,8 @@ class HomeController extends Controller
             Auth::user()->isAdmin() ? 
                 [
                     'hasAccess' => true,
-                    'books' => Book::getAll(),
-                    'authors' => Author::getAll(),
+                    'books' => Book::with('Author:id,name')->get(),
+                    'authors' => Author::withCount('Books')->get(),
                     'modal' => [
                         'open' => false,
                         'view' => view()
@@ -25,25 +25,4 @@ class HomeController extends Controller
                 ]
         );
     }
-
-    // public function create()
-    // {   
-    //     return view('home', [
-    //         'books' => Book::getAll(),
-    //         'authors' => Author::getAll(),
-    //         'modal' => [
-    //             'open' => true,
-    //             'view' => view('modal', [
-    //                 'open' => true
-    //             ])
-    //         ]
-    //     ]);
-    // }
-
-    // public function getModal($state=false)
-    // {
-    //     return view('modal', [
-    //         'open' => $state
-    //     ]);
-    // }
 }

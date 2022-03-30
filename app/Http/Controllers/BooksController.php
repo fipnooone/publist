@@ -6,7 +6,6 @@ use App\Models\Author;
 use App\Models\Book;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 class BooksController extends Controller
 {
@@ -15,8 +14,8 @@ class BooksController extends Controller
      *
      */
     public function index()
-    {
-        return Book::getAll();
+    {   
+        return Book::with('Author:id,name')->get();
     }
     /**
      * Display a listing of the resource.
@@ -87,6 +86,9 @@ class BooksController extends Controller
 
         $book = Book::find($fields['id']);
 
+        if (!$book)
+            return ['error'=>'Book not found'];
+
         if(Auth::user()->id != $book->author_id && !Auth::user()->admin)
             return ['error'=>'No access'];
 
@@ -118,9 +120,12 @@ class BooksController extends Controller
             'id' => 'required|integer'
         ]);
 
-        $book = Book::whereId($fields['id'])->first();
+        $book = Book::find($fields['id']);
 
-        if(Auth::user()->id != $book->author_id)
+        if (!$book)
+            return ['error'=>'Book not found'];
+
+        if(Auth::user()->id != $book->author_id && !Auth::user()->admin)
             return ['error'=>'No access'];
 
         $book->delete();

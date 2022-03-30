@@ -21,4 +21,3 @@ Route::prefix('authors')->group(function() {
     Route::get('books/{name}', [BooksController::class, 'searchByAuthorName']);
     Route::patch('', [AuthorsController::class, 'edit'])->middleware('auth:sanctum');;
 });
-

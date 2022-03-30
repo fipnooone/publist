@@ -68,7 +68,7 @@ Home
                         ]
                     ]) }})'>
                     <span class="title">Title: {{ $book->title }}</span>
-                    <span class="author-name">Author: {{ $book->author_name }}</span>
+                    <span class="author-name">Author: {{ $book->author->name }}</span>
                     <span class="description">Description: {{ $book->description }}</span>
                 </div>
             @endforeach
@@ -123,7 +123,7 @@ Home
                     ]) }})'>
                     <span class="name">Name: {{ $author->name }}</span>
                     <span class="email">Email: {{ $author->email }}</span>
-                    <span class="email">Books written: {{ $author->books_num }}</span>
+                    <span class="email">Books written: {{ $author->books_count }}</span>
                     @if ($author->admin)
                         <span class="admin">Admin</span>
                     @endif
