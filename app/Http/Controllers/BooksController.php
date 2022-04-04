@@ -40,14 +40,18 @@ class BooksController extends Controller
     {   
         $data = $request->validate([
             'title' => 'required|string|max:255',
-            'description' => 'required|string|max:1024'
+            'description' => 'required|string|max:1024',
+            'author_id' => 'integer'
         ]);
+
+        $author_id = (Auth::user()->admin && $data['author_id']) ? $data['author_id'] : Auth::user()->id;
 
         $book = Book::create([
             'title' => $data['title'],
             'description' => $data['description'],
-            'author_id' => Auth::user()->id
+            'author_id' => $author_id
         ]);
+
         if($book) {
             return redirect()->back();
         }
